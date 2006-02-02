@@ -1,0 +1,46 @@
+== Welcome to Shipping
+
+Shipping is a module that connects APIs for various shippers like UPS and FedEx.
+
+== Download
+
+* gem install shipping
+* http://rubyforge.org/projects/shipping
+* svn co http://rufy.com/svn/shipping/trunk
+
+=== Usage
+There is going to be some data that will persist for all connections. For example, you will not want to repeat the fedex account number every time in your implementation code. To set default values, setup a file called .shipping.yml in the home directory of the user who will be using this library. An example file would be:
+
+    fedex_url: https://gatewaybeta.fedex.com/GatewayDC
+    fedex_account: 1234556
+    fedex_meter: 387878
+    
+    ups_account: 7B4F74E3075AEEFF
+    ups_user: username
+    ups_password: password
+
+You can set as many default values as you would like in this file.
+
+    require 'shipping'
+    
+    ups = Shipping::UPS.new :zip => 97202, :sender_zip => 10001, :weight => 2
+    ups.price => 8.77
+    ups.valid_address? => false
+    
+    ups.city = "Portland"
+    ups.valid_address? => true
+    
+Alternately, you can instantiate the base class and then see both UPS and FedEx information.
+
+    ship = Shipping::Base.new :zip => 97202, :state => "OR", :sender_zip => 10001, :weight => 2
+    ship.ups.price => 8.77
+    ship.fedex.price => 5.17
+    
+    ship.city = "Portland"
+    ship.ups.valid_address? => true
+
+== Authors    
+* Lucas Carlson  (mailto:lucas@rufy.com)
+
+This library is released under the terms of the GNU LGPL.
+
