@@ -9,7 +9,12 @@ Shipping is a module that connects APIs for various shippers like UPS and FedEx.
 * svn co http://rufy.com/svn/shipping/trunk
 
 === Usage
-There is going to be some data that will persist for all connections. For example, you will not want to repeat the fedex account number every time in your implementation code. To set default values, setup a file called .shipping.yml in the home directory of the user who will be using this library. An example file would be:
+
+There is going to be some data that will persist for all
+connections. For example, you will not want to repeat the fedex
+account number every time in your implementation code. To set default
+values, set up a file called .shipping.yml in the home directory of
+the user who will be using this library.  An example file would be:
 
     fedex_url: https://gatewaybeta.fedex.com/GatewayDC
     fedex_account: 1234556
@@ -20,6 +25,10 @@ There is going to be some data that will persist for all connections. For exampl
     ups_password: password
 
 You can set as many default values as you would like in this file.
+Its name, location, and values are overridable on a per-connection
+basis.
+
+When it comes to actually getting a shipping quote, do something like this:
 
     require 'shipping'
     
@@ -30,7 +39,7 @@ You can set as many default values as you would like in this file.
     ups.city = "Portland"
     ups.valid_address? => true
     
-Alternately, you can instantiate the base class and then see both UPS and FedEx information.
+Alternately, you can instantiate the base class and then see both UPS and FedEx information:
 
     ship = Shipping::Base.new :zip => 97202, :state => "OR", :sender_zip => 10001, :weight => 2
     ship.ups.price => 8.77

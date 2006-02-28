@@ -17,18 +17,23 @@ module Shipping
       attr_accessor :weight, :weight_units, :insured_value, :declared_value, :transaction_type, :description
       attr_accessor :package_total, :packaging_type, :service_type
       
-		attr_accessor :ship_date, :dropoff_type, :pay_type, :currency_code
+      attr_accessor :ship_date, :dropoff_type, :pay_type, :currency_code
 
+      # These options specify everything you choose to about a
+      # particular shipment.  They override the default settings in
+      # the ~/.shipping.yml file, and you can use the
+      # <code>:prefs</code> option to point to a different defaults
+      # file entirely.
       def initialize(options = {})
-         prefs = File.expand_path(options[:prefs] || "~/.shipping.yml")
-         YAML.load(File.open(prefs)).each {|pref, value| eval("@#{pref} = #{value.inspect}")} if File.exists?(prefs)
+         @prefs = File.expand_path(options[:prefs] || "~/.shipping.yml")
+         YAML.load(File.open(@prefs)).each {|pref, value| eval("@#{pref} = #{value.inspect}")} if File.exists?(@prefs)
          
          @required = Array.new
 
-      	# include all provided data
-      	options.each do |method, value| 
-      	  instance_variable_set("@#{method}", value)
-      	end
+         # include all provided data
+         options.each do |method, value| 
+           instance_variable_set("@#{method}", value)
+         end
       end
       
       # Initializes an instance of Shipping::FedEx with the same instance variables as the base object
@@ -67,7 +72,9 @@ module Shipping
       # Make sure that the required fields are not empty
       def check_required
          for var in @required
-            raise ShippingError, "The #{var} variable needs to be set" if eval("@#{var}").nil?
+            if eval("@#{var}").nil?
+               raise ShippingError, "The #{var} variable needs to be set." + unless File.readable?(@prefs): " If you specify a prefs file, you can store that number there. See http://shipping.rubyforge.org/" else "" end
+            end
          end
       end
       

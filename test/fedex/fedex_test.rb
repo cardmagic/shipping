@@ -5,11 +5,11 @@ class FedExTest < Test::Unit::TestCase
 	end
 	
 	def test_price
-	   assert_equal 5.17, @ship.price
+	   assert_in_delta 5.5, @ship.price, 0.5
 	end
 	
 	def test_base_price
-	   assert_equal 5.07, @ship.base_price
+	   assert_in_delta 5.3, @ship.base_price, 0.5
 	end
 	
 	def test_fails
