@@ -3,7 +3,7 @@
 # License::   LGPL
 
 module Shipping
-	VERSION = "1.5.0"
+	VERSION = "1.5.1"
 
 	class ShippingError < StandardError; end
 	class ShippingRequiredFieldError < StandardError; end
