@@ -24,17 +24,24 @@
 # Copyright:: Copyright (c) 2005 Lucas Carlson
 # License::   LGPL
 
+$:.unshift(File.dirname(__FILE__))
+
 begin
    require 'rubygems'
-   require_gem 'builder', '~> 1.2'
 rescue LoadError
-   require 'builder'
+   nil
 end
 
+require 'builder'
 require 'yaml'
 require 'rexml/document'
 require 'net/http'
 require 'net/https'
+require 'base64'
+require 'fileutils'
+require 'tempfile'
+
+require 'extensions'
 require 'shipping/base'
 require 'shipping/fedex'
 require 'shipping/ups'
