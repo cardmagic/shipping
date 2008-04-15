@@ -20,6 +20,8 @@ module Shipping
 		attr_accessor :weight, :weight_units, :insured_value, :declared_value, :transaction_type, :description
 		attr_accessor :measure_units, :measure_length, :measure_width, :measure_height
 		attr_accessor :package_total, :packaging_type, :service_type
+		
+		attr_accessor :price, :discount_price, :eta, :time_in_transit
 
 		attr_accessor :ship_date, :dropoff_type, :pay_type, :currency_code, :image_type, :label_type
 
@@ -35,7 +37,7 @@ module Shipping
 				instance_variable_set("@#{method}", value)
 			end
 			
-			case options[:service]
+			case options[:carrier]
 		  when "fedex"
 		    fedex
 	    when "ups"
@@ -44,7 +46,6 @@ module Shipping
       else
         raise ShippingError, "unknown service"
       end
-
 		end
 
 		# Initializes an instance of Shipping::FedEx with the same instance variables as the base object
@@ -56,6 +57,8 @@ module Shipping
 		def ups
 			Shipping::UPS.new prepare_vars
 		end
+		
+		
 
 		def self.state_from_zip(zip)
 			zip = zip.to_i
@@ -171,5 +174,15 @@ module Shipping
 			end
 
 			STATES = {"al" => "alabama", "ne" => "nebraska", "ak" => "alaska", "nv" => "nevada", "az" => "arizona", "nh" => "new hampshire", "ar" => "arkansas", "nj" => "new jersey", "ca" => "california", "nm" => "new mexico", "co" => "colorado", "ny" => "new york", "ct" => "connecticut", "nc" => "north carolina", "de" => "delaware", "nd" => "north dakota", "fl" => "florida", "oh" => "ohio", "ga" => "georgia", "ok" => "oklahoma", "hi" => "hawaii", "or" => "oregon", "id" => "idaho", "pa" => "pennsylvania", "il" => "illinois", "pr" => "puerto rico", "in" => "indiana", "ri" => "rhode island", "ia" => "iowa", "sc" => "south carolina", "ks" => "kansas", "sd" => "south dakota", "ky" => "kentucky", "tn" => "tennessee", "la" => "louisiana", "tx" => "texas", "me" => "maine", "ut" => "utah", "md" => "maryland", "vt" => "vermont", "ma" => "massachusetts", "va" => "virginia", "mi" => "michigan", "wa" => "washington", "mn" => "minnesota", "dc" => "district of columbia", "ms" => "mississippi", "wv" => "west virginia", "mo" => "missouri", "wi" => "wisconsin", "mt" => "montana", "wy" => "wyoming"}
+			
+			def self.initialize_for_fedex_service(xml)
+        s = Shipping::Base.new
+        s.fedex
+        s.eta = REXML::XPath.first(xml, "DeliveryDate").text unless REXML::XPath.match(xml, "DeliveryDate").empty?
+        s.service_type = REXML::XPath.first(xml, "Service").text
+        s.discount_price = REXML::XPath.first(xml, "EstimatedCharges/DiscountedCharges/BaseCharge").text
+        s.price = REXML::XPath.first(xml, "EstimatedCharges/DiscountedCharges/NetCharge").text
+        return s
+      end
 		end
 	end

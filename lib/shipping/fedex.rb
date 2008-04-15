@@ -480,7 +480,6 @@ module Shipping
     end
     
     def rate_available_services_request(carrier_code)
-      results = []
       @data = String.new
 			b = Builder::XmlMarkup.new(:target => @data)
 			b.instruct!
@@ -514,7 +513,7 @@ module Shipping
 			get_response @fedex_url
 
 			REXML::XPath.each(@response, "//Entry") { |el|
-			  @services << Service.new('fedex', el)
+			  @services << Shipping::Base.initialize_for_fedex_service(el)
 			}
 			
     end
