@@ -68,7 +68,7 @@ module Shipping
 					b.PersonName @name
 					b.CompanyName @company
 					b.Department @department if @department
-					b.PhoneNumber @phone.gsub(/[^\d]/,"")
+					b.PhoneNumber @phone.to_s.gsub(/[^\d]/,"")
 					b.tag! :"E-MailAddress", @email
 				}
 				b.Address { |b|
@@ -401,6 +401,10 @@ module Shipping
 			return true
 		end
 		
+		def available_services
+		  get_available_services
+	  end
+		
 	private
 
 		def get_price #:nodoc:
@@ -455,6 +459,58 @@ module Shipping
 
 			return "Error #{code}: #{message}"
 		end
+
+    def get_available_services
+      @required = [:zip, :sender_zip, :weight]
+			@required += [:fedex_account, :fedex_meter, :fedex_url]
+
+			@transaction_type = 'rate_services'
+			@weight = (@weight.to_f*10).round/10.0
+			
+			# Ground first
+			services = []
+			rate_available_services_request('FDXG')
+			#rate_available_services_request('FDXE')
+    end
+    
+    def rate_available_services_request(carrier_code)
+      results = []
+      @data = String.new
+			b = Builder::XmlMarkup.new(:target => @data)
+			b.instruct!
+			b.FDXRateAvailableServicesRequest('xmlns:api' => 'http://www.fedex.com/fsmapi', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'xsi:noNamespaceSchemaLocation' => 'FDXRateAvailableServicesRequest.xsd') { |b|
+				b.RequestHeader { |b|
+					b.AccountNumber @fedex_account
+					b.MeterNumber @fedex_meter
+					b.CarrierCode carrier_code
+				}
+				b.ShipDate @ship_date unless @ship_date.blank?
+				b.DropoffType DropoffTypes[@dropoff_type] || DropoffTypes['regular_pickup']
+				b.Packaging PackageTypes[@packaging_type] || PackageTypes['your_packaging']
+				b.WeightUnits @weight_units || 'LBS'
+				b.Weight @weight || '1.0'
+				b.ListRate 'false'
+				b.OriginAddress { |b|
+				  b.StateOrProvince @sender_state
+				  b.PostalCode @sender_zip
+				  b.CountryCode @sender_country_code || 'US'
+				}
+				b.DestinationAddress { |b|
+				  b.StateOrProvince @state
+				  b.PostalCode @zip
+				  b.CountryCode @country_code || 'US'
+				}
+				b.Payment { |b|
+				  b.PayorType PaymentTypes[@pay_type] || PaymentTypes['sender']
+				}
+				b.PackageCount @package_total || 1
+			}
+			get_response @fedex_url
+			puts "========================="
+			REXML::XPath.each(@response, "//Entry") { |element|
+			  puts element["Service"].text
+			}
+    end
 
 		# The following type hashes are to allow cross-api data retrieval
 
