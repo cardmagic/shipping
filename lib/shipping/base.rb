@@ -33,6 +33,16 @@ module Shipping
 			options.each do |method, value| 
 				instance_variable_set("@#{method}", value)
 			end
+			
+			case options[:service]
+		  when "fedex"
+		    fedex
+	    when "ups"
+	      ups
+      when nil
+      else
+        raise ShippingError, "unknown service"
+      end
 
 		end
 
