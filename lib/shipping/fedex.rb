@@ -468,7 +468,7 @@ module Shipping
 			@weight = (@weight.to_f*10).round/10.0
 			
 			# Ground first
-			services = []
+			@services = []
 			rate_available_services_request('FDXG')
 			#rate_available_services_request('FDXE')
     end
@@ -506,10 +506,11 @@ module Shipping
 				b.PackageCount @package_total || 1
 			}
 			get_response @fedex_url
-			puts "========================="
-			REXML::XPath.each(@response, "//Entry") { |element|
-			  puts element["Service"].text
+
+			REXML::XPath.each(@response, "//Entry") { |el|
+			  @services << Service.new('fedex', el)
 			}
+			
     end
 
 		# The following type hashes are to allow cross-api data retrieval

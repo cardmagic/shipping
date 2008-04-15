@@ -24,9 +24,11 @@ module Shipping
     private
     def initialize_for_fedex(xml)
       begin
-        REXML::XPath.each(xml, "//Entry") { |element|
-          puts element["Service"].text
-        }
+        @carrier = 'fedex'
+        #@eta = REXML::XPath.first(xml, "//DeliveryDate").text
+        @type = REXML::XPath.first(xml, "//Service").text
+        @discount_price = REXML::XPath.first(xml, "//DiscountedCharges/BaseCharge").text
+        @price = REXML::XPath.first(xml, "//DiscountedCharges/NetCharge").text
       rescue ShippingError => e
         puts e.message
       end
