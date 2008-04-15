@@ -28,6 +28,7 @@ module Shipping
 			YAML.load(File.open(prefs)).each {|pref, value| eval("@#{pref} = #{value.inspect}")} if File.exists?(prefs)
 
 			@required = Array.new
+			@services = Array.new
 
 			# include all provided data
 			options.each do |method, value| 

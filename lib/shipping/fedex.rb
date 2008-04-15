@@ -401,8 +401,12 @@ module Shipping
 			return true
 		end
 		
-		def available_services
-		  get_available_services
+		def available_services(force=nil)
+		  if @services.empty? || force
+		    get_available_services
+		  else
+		    @services
+	    end
 	  end
 		
 	private
@@ -470,7 +474,9 @@ module Shipping
 			# Ground first
 			@services = []
 			rate_available_services_request('FDXG')
-			#rate_available_services_request('FDXE')
+			rate_available_services_request('FDXE')
+			
+			return @services
     end
     
     def rate_available_services_request(carrier_code)
