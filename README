@@ -44,6 +44,7 @@ Alternately, you can instantiate the base class and then see both UPS and FedEx 
 
 == Authors    
 * Lucas Carlson  (mailto:lucas@rufy.com)
+* Jimmy Baker (mailto:jimmyebaker@gmail.com)
 * Noah Zoschke (mailto:noah@bitscribe.net)
 
 This library is released under the terms of the GNU LGPL.
