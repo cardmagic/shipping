@@ -423,7 +423,7 @@ module Shipping
 
 		CustomerTypes = {
 			'wholesale' => '01',
-			'ocassional' => '02',
+			'occasional' => '02',
 			'retail' => '04'
 		}
 		
