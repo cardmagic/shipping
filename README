@@ -1,3 +1,7 @@
+== Archived - no longer maintained
+
+This project is archived and no longer maintained.
+
 == Welcome to Shipping
 
 Shipping is a module that connects APIs for various shippers like UPS and FedEx. Shipping currently supports pricing, shipping, labeling and voiding for UPS and FedEx through their XML APIs.
@@ -48,4 +52,3 @@ Alternately, you can instantiate the base class and then see both UPS and FedEx 
 * Noah Zoschke (mailto:noah@bitscribe.net)
 
 This library is released under the terms of the GNU LGPL.
-
